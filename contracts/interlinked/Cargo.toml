@@ -13,11 +13,10 @@ soroban-sdk = "22"
 
 [lib]
 crate-type = ["cdylib"]
-doctest = false
 
 [dependencies]
-soroban-sdk = { workspace = true }
+soroban-sdk = { version = "22.0.0-rc.3.2", default-features = false, features = ["alloc"]   }
 log = "0.4.25"
 
 [dev-dependencies]
-soroban-sdk = { workspace = true, features = ["testutils"] }
+soroban-sdk = { version = "22.0.0-rc.3.2", features = ["testutils"] }
