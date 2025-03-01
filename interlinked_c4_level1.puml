@@ -1,0 +1,19 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(User, "User", "is an individual that uses a short link")
+Person(Administrator, "Administrator", "is an entity responsible for content moderation upon a claim and blocks links with unappropriated content")
+Person(Tenant, "Tenant", "is the entity (individual or institution) that creates a short link for they needs")
+Container(SystemD, "InterLinked Tokenization System", "Online Portal", "Allows to create and resolve short link for Tenant and client")
+Container_Ext(Soroban, "Soroban", "Stellar Soroban", "Stellar Soroban smart contracts to manage short links")
+Container_Ext(Payment, "Payment Gateway", "Stellar Anchor platform", "Allows to pay-in and pay-out on the base of Stellar Anchor protocols SEP-006, SEP-0024, SEP-0031")
+Container_Ext(Tor.us, "Tor.us", "Stellar Anchor platform", "Allows to store private key for a smart contract under social accounts credential")
+
+Rel(User, SystemD,  "Uses")
+Rel(Administrator, SystemD,  "Configures")
+Rel(Tenant, SystemD,  "Uses")
+Rel(SystemD, Payment,  "Payments process")
+Rel(SystemD, Tor.us,  "Custodial solution")
+Rel(SystemD, Soroban,  "Uses")
+
+@enduml

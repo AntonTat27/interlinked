@@ -1,0 +1,48 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(User, "User", "is an individual that uses a short link")
+Person(Administrator, "Administrator", "is an entity responsible for content moderation upon a claim and blocks links with unappropriated content")
+Person(Tenant, "Tenant", "is the entity (individual or institution) that creates a short link for they needs")
+
+Container_Ext(TorUS, "Tor.us", "Web3Auth system", "Web3Auth system and Key Storage for Soroban smart contract management\n(Docs: https://docs.tor.us/)")
+
+    Rel(Administrator, TorUS,  "Uses")
+    Rel(Tenant, TorUS,  "Uses")
+
+System_Boundary(System, "InterLinked Tokenization System") {
+    Container(SystemD, "Link Resolver", "Online Demand System", "Allows to redirect to the target link, and make records for tenant analytics")
+    Container(SystemA, "InterLinked admin portal", "Online Product System", "Allows admin of the system to reject links with inappropriate content")
+    Container(SystemS, "Tenant Portal", "Online Service System", "Allows tenant to generate a short link, view analytics, and make payments")
+    Container(Tokenizer, "System Asset tokenization management", "Implementation of Soroban smart contract management", "Provides interface for the smart contract interaction and management to support multi-tenants for generation of links")
+
+    User ---> SystemD :  "Uses"
+
+    Rel(TorUS, SystemA,  "Uses")
+    Rel(TorUS, SystemS,  "Uses")
+    Rel(SystemA, Tokenizer,  "Manages")
+    Rel(SystemS, Tokenizer,  "Manages")
+    Rel(SystemD, Tokenizer,  "Uses")
+}
+
+
+System_Boundary(Anchor, "Stellar Anchor platform") {
+    Container_Ext(PaymentI, "SEP-0006", "sep-0001: TRANSFER_SERVER", "Deposit and Withdrawal API")
+    Container_Ext(PaymentO, "SEP-0024", "sep-0001: TRANSFER_SERVER_SEP0024", "Hosted Deposit and Withdrawal")
+}
+
+System_Boundary(Soroban, "Stellar Soroban") {
+    Container_Ext(TenantManager, "Tenant Management", "Soroban Smart Contract", "Smart contract to manage tenant list and linked Smart Contract")
+    Container_Ext(ShortLink, "Short link", "Soroban Smart Contract", "Smart contract to manage Target URI against short link")
+    Container_Ext(SorobanStore, "Soroban Store", "Soroban Store", "Soroban Smart Contract to store validated data after processing")
+    TenantManager -> ShortLink : "Create Tenant\n Smart Contract"
+    TenantManager --> SorobanStore :  "Event for Data update"
+    ShortLink --> SorobanStore :  "Event for Data update"
+}
+
+SystemS ---> Anchor :  "Pay"
+Tokenizer ---> TenantManager :  "Uses"
+Tokenizer ---> ShortLink :  "Uses"
+
+
+@enduml
