@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor "Tenant" as User #Purple
+participant "Interlinked\nSystem" as Interlinked
+participant "Tor.US" as TorUs
+database "Soroban\nMaster Contract\nStore" as Soroban_Master #Blue
+database "Soroban\nTenant Contract\nStore" as Soroban_Tenant #Purple
+
+autonumber
+group Registration
+User -> Interlinked: Register
+Interlinked -> TorUs : Sign Up
+TorUs -> Interlinked : session
+Interlinked -[#Blue]-> Soroban_Master: Create Tenant\ncontract address\nby tenantID
+Soroban_Master -[#Blue]-> Interlinked: Tenant contract address
+Interlinked -> TorUs : Save Tenant Private Key\nand tenantID under\ntenant session
+TorUs -> Interlinked: success
+Interlinked -> User : Show Dashboard
+end
+
+group Create Short Link
+User -> Interlinked: Sig In
+Interlinked -> TorUs : Sign In
+TorUs -> Interlinked : session
+Interlinked -> User : Show Dashboard
+User -> Interlinked : Create New short link\nwith Target URI
+Interlinked -> TorUs : Get tenantID and\ntenant Key for smart contract
+TorUs -> Interlinked : tenantID and\ntenant Key for smart contract
+Interlinked -[#Blue]-> Soroban_Master: Get Tenant\ncontract address\nby tenantID
+Soroban_Master -[#Blue]-> Interlinked: Tenant contract address
+Interlinked -[#Purple]--> Soroban_Tenant: Create New Short Link\nwith Target URI
+Soroban_Tenant -[#Purple]--> Interlinked: Target linkID
+Interlinked -> Interlinked: Generate short link\nwith tenantID and linkID\nembeded
+Interlinked -> User: return short link
+end
+@enduml
