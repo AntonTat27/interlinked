@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor "User" as User #green
+participant "Interlinked\nSystem" as Interlinked
+database "Soroban\nMaster Contract\nStore" as Soroban_Master #Blue
+database "Soroban\nTenant Contract\nStore" as Soroban_Tenant #Purple
+
+autonumber
+
+User -> Interlinked: http get by short link
+Interlinked -> Interlinked: parser short link uri\nto extract tenantID\nand Target linkID
+Interlinked -[#Blue]-> Soroban_Master: Get Tenant\ncontract address\nby tenantID
+Soroban_Master -[#Blue]-> Interlinked: Tenant contract address
+Interlinked -[#Purple]--> Soroban_Tenant: Get Target URI\nby Target linkID
+Soroban_Tenant -[#Purple]--> Interlinked: Target URI
+Interlinked -> Interlinked : Update Analytics\nData information\nfor Target URI
+Interlinked -> User: redirect to\nTarget URI
+
+@enduml

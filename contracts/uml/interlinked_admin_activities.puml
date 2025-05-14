@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor "User" as User #green
+actor "Admin" as Admin #red
+participant "Tor.US" as TorUs
+participant "Interlinked\nSystem" as Interlinked
+database "Soroban\nMaster Contract\nStore" as Soroban_Master #Blue
+
+autonumber
+
+User -> Admin: claim to Admin\nunappropriated content
+Admin -> Admin: review content\nof target URI\nfor short link
+Admin -> Interlinked: Block tenant by tenantID
+Interlinked -> TorUs : sig in
+TorUs -> Interlinked : session
+Interlinked -> TorUs : Get Admin's key\nfor Master Contract
+TorUs -> Interlinked : Admin's key\nfor Master Contract
+Interlinked -[#Blue]-> Soroban_Master: Block Tenant\ncontract address\nwith clain information\nto not resolve it\nby tenantID
+Soroban_Master -[#Blue]-> Interlinked: Block operation hash\n in blockchain
+Interlinked -> Admin : Block operation hash
+Admin -> User : Notification with link to Block operation hash
+
+@enduml
