@@ -8,7 +8,7 @@ impl UpgradeableContract {
         String::from_str(&env, "0.0.1")
     }
 
-    pub fn version() -> i32 {
+    pub fn version() -> u32 {
         3
     }
 

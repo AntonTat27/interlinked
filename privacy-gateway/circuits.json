@@ -1,0 +1,46 @@
+{
+  "_comment": "One entry per policy circuit. public_signals must list the component main { public [...] } signals in exactly the declared order -- this is how scripts/encode_for_soroban.mjs locates the nullifier inside public.json without per-circuit code.",
+  "pot_sizes": {
+    "bls12381": 17
+  },
+  "circuits": {
+    "verify_link_access": {
+      "prime": "bls12381",
+      "vk_id": "verify_link_access_v1",
+      "public_signals": [
+        "merkle_root",
+        "nullifier_hash",
+        "link_id",
+        "policy_jurisdiction",
+        "policy_accredited"
+      ],
+      "nullifier_signal": "nullifier_hash",
+      "derived_fields": {
+        "nullifier_hash": { "poseidon2": ["kyc_secret", "link_id"] }
+      }
+    },
+    "verify_investor_jurisdiction": {
+      "prime": "bls12381",
+      "vk_id": "verify_investor_jurisdiction_v1",
+      "public_signals": [
+        "is_member",
+        "credential_commitment",
+        "policy_hash",
+        "nullifier_hash",
+        "context_id"
+      ],
+      "nullifier_signal": "nullifier_hash",
+      "array_fields": {
+        "policy_jurisdiction": 8
+      },
+      "auto_fields": {
+        "context_id": "timestamp"
+      },
+      "derived_fields": {
+        "credential_commitment": { "poseidon2": ["kyc_secret", "jurisdiction"] },
+        "policy_hash": { "poseidonArray": "policy_jurisdiction" },
+        "nullifier_hash": { "poseidon2": ["kyc_secret", "context_id"] }
+      }
+    }
+  }
+}
